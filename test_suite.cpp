@@ -1,3 +1,48 @@
+/* 
+   Copyright (c) 2015, 2016, 2017 Andreas F. Borchert
+   All rights reserved.
+
+   Permission is hereby granted, free of charge, to any person obtaining
+   a copy of this software and associated documentation files (the
+   "Software"), to deal in the Software without restriction, including
+   without limitation the rights to use, copy, modify, merge, publish,
+   distribute, sublicense, and/or sell copies of the Software, and to
+   permit persons to whom the Software is furnished to do so, subject to
+   the following conditions:
+
+   The above copyright notice and this permission notice shall be
+   included in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+   KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+   WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+*/
+
+/*
+   small test suite for thread_pool.h with 100% C0 coverage
+
+   to test the coverage using gcov,
+    * uncomment the -fprofile-arcs and -ftest-coverage flags in
+      the Makefile
+    * make clean && make
+    * ./test_suite
+    * gcov -m test_suite.cpp
+    * examine thread_pool.hpp.gcov
+
+   gcov -m -b test_suite.cpp delivers following results for
+   thread_pool.hpp:
+
+      Lines executed:100.00% of 63
+      Branches executed:97.63% of 422
+      Taken at least once:51.90% of 422
+      Calls executed:73.00% of 626
+*/
+
 #include <atomic>
 #include <chrono>
 #include <exception>
@@ -286,6 +331,37 @@ bool t14() {
    return sum == 42;
 }
 
+/* test that tasks submitted after terminate
+   deliver broken promises */
+bool t15() {
+   mt::thread_pool tpool(2);
+   std::promise<void> p1; auto f1 = p1.get_future();
+   std::promise<void> p2; auto f2 = p2.get_future();
+   auto r1 = tpool.submit([&p1]() {
+      p1.set_value();
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      return 20;
+   });
+   auto r2 = tpool.submit([&p2]() {
+      p2.set_value();
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      return 22;
+   });
+   /* make sure that both initial tasks were started
+      before we kill the thread pool */
+   f1.get(); f2.get();
+   tpool.terminate();
+   auto r3 = tpool.submit([]() { return 42; });
+   bool ok;
+   try {
+      r3.get();
+      ok = false;
+   } catch (std::future_error& e) {
+      ok = e.code() == std::future_errc::broken_promise;
+   }
+   return ok && r1.get() + r2.get() == 42;
+}
+
 struct statistics {
    statistics() : passed(0), failed(0), exceptions(0) {
    }
@@ -328,6 +404,7 @@ int main() {
    t("t12", t12, stats);
    t("t13", t13, stats);
    t("t14", t14, stats);
+   t("t15", t15, stats);
    unsigned int tests = stats.passed + stats.failed;
    if (tests == stats.passed) {
       std::cout << "all tests passed" << std::endl;
