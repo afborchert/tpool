@@ -57,12 +57,12 @@ The destructor of a thread pool invokes the _join_ method.
 ## License
 
 This package is available under the terms of
-the [https://opensource.org/licenses/MIT](MIT License).
+the [MIT License](https://opensource.org/licenses/MIT).
 
 ## Files
 
 To use `mt::thread_pool`, you will need just to drop
-[printf.hpp](https://github.com/afborchert/mt/blob/master/thread_pool.hpp)
+[thread_pool.hpp](https://github.com/afborchert/tpool/blob/master/thread_pool.hpp)
 within your project and `#include` it.
 
 The source file `test_suite.cpp` is an associated
@@ -71,7 +71,7 @@ test suite and the Makefile helps to compile it.
 ## Alternatives
 
 This is not the first attempt to provide a thread pool
-for C++.
+for C++11.
 
  * Jakob Progsch offers
    [a similar header-only thread pool](https://github.com/progschj/ThreadPool)
