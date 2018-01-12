@@ -68,6 +68,7 @@ ISO C++ 2011 standard.
 #else
 
 #include <condition_variable>
+#include <functional>
 #include <future>
 #include <list>
 #include <memory>
