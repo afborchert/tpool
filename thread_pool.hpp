@@ -68,9 +68,9 @@ ISO C++ 2011 standard.
 #else
 
 #include <condition_variable>
+#include <deque>
 #include <functional>
 #include <future>
-#include <list>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -214,7 +214,7 @@ namespace mt {
 	 std::condition_variable cv;
 	 std::condition_variable joining_finished; // joined==true?
 	 std::vector<std::thread> threads; // fixed number of threads
-	 std::list<std::function<void()>> tasks; // submitted tasks
+	 std::deque<std::function<void()>> tasks; // submitted tasks
 	 unsigned int active; // number of threads that are executing a task
 	 bool joining; // initially false, set to true if join() is invoked
 	 bool joined; // initially false, set to true if join is completed
