@@ -203,7 +203,7 @@ namespace mt {
 	       otherwise we will break right away the
 	       promise on returning */
 	    if (!terminating && !joined) {
-	       tasks.push_back([task]() { (*task)(); });
+	       tasks.emplace_back([task]() { (*task)(); });
 	       cv.notify_one();
 	    }
 	    return result;
