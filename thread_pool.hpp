@@ -88,7 +88,7 @@ namespace mt {
 	       threads(nofthreads), active(0),
 	       joining(false), joined(false), terminating(false) {
 	    for (auto& t: threads) {
-	       t = std::thread([=]() mutable -> void {
+	       t = std::thread([this]() mutable -> void {
 		  for (;;) {
 		     std::function<void()> task;
 		     /* fetch next task, if there is any */
