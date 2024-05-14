@@ -86,10 +86,10 @@ bool t4() {
    mt::thread_pool tpool(size);
    std::future<unsigned int> results[size + extra];
    for (unsigned int i = 0; i < size + extra; ++i) {
-      results[i] = std::move(tpool.submit([i]() -> unsigned int {
+      results[i] = tpool.submit([i]() -> unsigned int {
 	 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	 return i + 1;
-      }));
+      });
    }
    unsigned int sum = 0;
    for (auto& result: results) {
@@ -135,10 +135,10 @@ bool t6() {
       mt::thread_pool tpool(size);
       std::future<unsigned int> results[size + extra];
       for (unsigned int i = 0; i < size + extra; ++i) {
-	 results[i] = std::move(tpool.submit([i]() -> unsigned int {
+	 results[i] = tpool.submit([i]() -> unsigned int {
 	    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	    return i + 1;
-	 }));
+	 });
       }
       tpool.terminate();
       unsigned int sum = 0;
@@ -160,10 +160,10 @@ bool t7() {
       mt::thread_pool tpool(size);
       std::future<unsigned int> results[size + extra];
       for (unsigned int i = 0; i < size + extra; ++i) {
-	 results[i] = std::move(tpool.submit([i]() -> unsigned int {
+	 results[i] = tpool.submit([i]() -> unsigned int {
 	    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	    return i + 1;
-	 }));
+	 });
       }
       tpool.terminate(); tpool.join();
       unsigned int sum = 0;
@@ -184,10 +184,10 @@ bool t8() {
    mt::thread_pool tpool(size);
    std::future<unsigned int> results[size + extra];
    for (unsigned int i = 0; i < size + extra; ++i) {
-      results[i] = std::move(tpool.submit([i]() -> unsigned int {
+      results[i] = tpool.submit([i]() -> unsigned int {
 	 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	 return i + 1;
-      }));
+      });
    }
    tpool.join(); tpool.terminate();
    unsigned int sum = 0;
@@ -268,10 +268,10 @@ bool t12() {
    unsigned int extra = size * 2;
    std::vector<std::future<unsigned int>> results(size + extra);
    for (unsigned int i = 0; i < size + extra; ++i) {
-      results[i] = std::move(tpool.submit([i]() -> unsigned int {
+      results[i] = tpool.submit([i]() -> unsigned int {
 	 std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	 return i + 1;
-      }));
+      });
    }
    unsigned int sum = 0;
    for (auto& result: results) {
