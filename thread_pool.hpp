@@ -84,9 +84,7 @@ namespace mt {
       public:
 	 thread_pool() : thread_pool(std::thread::hardware_concurrency()) {
 	 }
-	 thread_pool(unsigned int nofthreads) :
-	       threads(nofthreads), active(0),
-	       joining(false), joined(false), terminating(false) {
+	 thread_pool(unsigned int nofthreads) : threads(nofthreads) {
 	    for (auto& t: threads) {
 	       t = std::thread([this]() mutable -> void {
 		  for (;;) {
@@ -215,10 +213,10 @@ namespace mt {
 	 std::condition_variable joining_finished; // joined==true?
 	 std::vector<std::thread> threads; // fixed number of threads
 	 std::deque<std::function<void()>> tasks; // submitted tasks
-	 unsigned int active; // number of threads that are executing a task
-	 bool joining; // initially false, set to true if join() is invoked
-	 bool joined; // initially false, set to true if join is completed
-	 bool terminating; // initially false, set to true by terminate()
+	 unsigned int active = 0; // number of threads that are executing a task
+	 bool joining = false; // set to true if join() is invoked
+	 bool joined = false; // set to true if join is completed
+	 bool terminating = false; // set to true by terminate()
    };
 
 } // namespace mt
